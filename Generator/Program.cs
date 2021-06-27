@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using System.Linq;
@@ -11,8 +11,7 @@ namespace QuestionGenerator
     {
         public static void Main(string[] args)
         {
-            //var text = @"c:\temp\Questions.txt";
-            var text = @"C:\Users\harle\source\repos\QuestionGenerator\QuestionGenerator\Questions.txt";
+            var text = @"c:\temp\Questions.txt";
 
             if (!File.Exists(text))
             {
@@ -66,15 +65,18 @@ namespace QuestionGenerator
 
             var rand = new Random();
             var lines = File.ReadAllLines(text);
-            var count = 0;
             lines = lines.OrderBy(x => rand.Next()).ToArray();
 
-            do
+            foreach (var line in lines)
             {
                 Console.Clear();
-                Console.WriteLine(lines[count]);
-                count++;
-            } while (Continue(task));
+                Console.WriteLine(line);
+                if(!Continue(task))
+                {
+                    break;
+                }
+            }
+
         }
 
         public static void AddQs(string text)
