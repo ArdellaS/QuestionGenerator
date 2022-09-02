@@ -19,18 +19,20 @@ namespace QuestionGenerator
             if (!File.Exists(text))
             {
                 await using FileStream fs = File.Create(text);
-            }
-            File.WriteAllText(text, "How did you get your name?,safe");
+                File.WriteAllText(text, "How did you get your name?,safe");
+            }            
         }
 
         private static Dictionary<string,string> GetAllQuestions(string text)
         {
             CheckFile();
+            var rand = new Random();
 
             return File.ReadLines(text)
+                .OrderBy(x => rand.Next())
                 .Select(x => x.Split(','))
-                .ToDictionary(split => split[1],
-                split => split[0]);
+                .ToDictionary(split => split[0],
+                    split => split[1]);
         }
 
         public static void SeperateQuestions()
@@ -39,15 +41,15 @@ namespace QuestionGenerator
             
             foreach (var question in questions)
             {                
-                AllQuestions.Add(question.Value);
+                AllQuestions.Add(question.Key);
 
-                if (question.Key == "safe")
+                if (question.Value == "safe")
                 {
-                    SafeQuestions.Add(question.Value);
+                    SafeQuestions.Add(question.Key);
                 }
                 else
                 {
-                    NsfwQuestions.Add(question.Value);
+                    NsfwQuestions.Add(question.Key);
                 }
             }
         }
@@ -56,12 +58,37 @@ namespace QuestionGenerator
         {
             Console.Clear();
             Console.WriteLine($"Add question: ");
-            var newQuestion = Console.ReadLine();
+            var question = Console.ReadLine();
+
+            while (string.IsNullOrEmpty(question))
+            {
+                Console.Clear();
+                Console.WriteLine($"Please add question: ");
+                question = Console.ReadLine();
+            }
+
+            Console.WriteLine("\nIs this safe? y/n");
+            var response = char.ToLower(Console.ReadKey().KeyChar);
+
+            while (!response.Equals('y') && !response.Equals('n'))
+            {
+                Console.Clear();
+                Console.WriteLine($"{question}\nIs this safe? y/n");
+                response = char.ToLower(Console.ReadKey().KeyChar);
+            }
+
+            switch (response)
+            {
+                case 'y':
+                    question += ",safe";
+                    break;
+                case 'n':
+                    question += ",nsfw";
+                    break;
+            }
 
             using StreamWriter sw = File.AppendText(text);
-            sw.Write($"\n{newQuestion}");
-
-            SeperateQuestions();
+            sw.Write($"\n{question}");
         }
     }
 }

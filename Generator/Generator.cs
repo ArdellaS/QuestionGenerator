@@ -43,12 +43,13 @@ namespace QuestionGenerator
             FileManager.SeperateQuestions();
 
             Console.WriteLine("What kind of questions do you want?\n1. All Questions\n2.Safe Questions\n3.Not Safe for For Questions");
-            int response;
-            var isNumber = int.TryParse(Console.ReadLine(), out response);
+            var isNumber = int.TryParse(Console.ReadLine(), out int response);
 
-            while (isNumber && response < 3 && response > 0)
+            while (!isNumber || response > 3 || response < 1)
             {
+                Console.Clear();
                 Console.WriteLine("What kind of questions do you want?\n1. All Questions\n2.Safe Questions\n3.Not Safe for For Questions");
+                isNumber = int.TryParse(Console.ReadLine(), out response);
             }
 
             switch (response)
@@ -62,7 +63,6 @@ namespace QuestionGenerator
                 default:
                     return FileManager.AllQuestions;
             }
-
         }
     }
 }
